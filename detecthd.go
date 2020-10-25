@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// DataDetect Data Detect
 type DataDetect struct {
 	Locpath     string `json:"locpath"`
 	Type        string `json:"sType"`
@@ -29,10 +30,12 @@ type DataDetect struct {
 	Otherinfo map[string]string `json:"otherinfo"`
 }
 
+// NewDataDetect create Detect Data
 func NewDataDetect() *DataDetect {
 	return &DataDetect{Otherinfo: make(map[string]string)}
 }
 
+// AddMap2Other  add map
 func (dd *DataDetect) AddMap2Other(ddother map[string]string) {
 	if len(ddother) == 0 {
 		return
@@ -43,20 +46,24 @@ func (dd *DataDetect) AddMap2Other(ddother map[string]string) {
 	}
 }
 
+// SyncDataDetect sync data
 type SyncDataDetect struct {
 	lock      *sync.RWMutex
 	IsRunning bool
 	detectHDD *DataDetect
 }
 
+// NewSyncDataDetect create data
 func NewSyncDataDetect() *SyncDataDetect {
 	return &SyncDataDetect{lock: new(sync.RWMutex), IsRunning: false, detectHDD: NewDataDetect()}
 }
 
+// SetRunning running
 func (sdd *SyncDataDetect) SetRunning() {
 	sdd.IsRunning = true
 }
 
+// CleanRunning Clean Running
 func (sdd *SyncDataDetect) CleanRunning() {
 	sdd.IsRunning = false
 }
@@ -72,15 +79,18 @@ func (sdd *SyncDataDetect) String() string {
 	return string(jsonString)
 }
 
+// SyncMap struct
 type SyncMap struct {
 	lock     *sync.RWMutex
 	dddetect map[string]*SyncDataDetect
 }
 
+// NewSyncMap  new SyncMap struct
 func NewSyncMap() *SyncMap {
 	return &SyncMap{lock: new(sync.RWMutex), dddetect: make(map[string]*SyncDataDetect)}
 }
 
+// MatchKey find key
 func (sm *SyncMap) MatchKey(key string) bool {
 	var okret bool
 	if len(key) == 0 {
@@ -94,7 +104,7 @@ func (sm *SyncMap) MatchKey(key string) bool {
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
 
-	for kk, _ := range sm.dddetect {
+	for kk := range sm.dddetect {
 		sikk := re.ReplaceAllString(kk, `$1$2$3$4$5$7$8`)
 		if strings.Compare(sik, sikk) == 0 {
 			okret = true
@@ -106,6 +116,7 @@ func (sm *SyncMap) MatchKey(key string) bool {
 	return okret
 }
 
+// ContainsKey check key
 func (sm *SyncMap) ContainsKey(key string) bool {
 	if len(key) == 0 {
 		return false
@@ -116,6 +127,7 @@ func (sm *SyncMap) ContainsKey(key string) bool {
 	return ok
 }
 
+// AddValue add value
 func (sm *SyncMap) AddValue(key string, dd *SyncDataDetect) {
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
@@ -127,10 +139,11 @@ func (sm *SyncMap) AddValue(key string, dd *SyncDataDetect) {
 
 }
 
+// RemoveOld remove
 func (sm *SyncMap) RemoveOld(newkeylist []string) {
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
-	for kk, _ := range sm.dddetect {
+	for kk := range sm.dddetect {
 		if !stringInSlice(kk, newkeylist) {
 			delete(sm.dddetect, kk)
 		}
@@ -138,6 +151,7 @@ func (sm *SyncMap) RemoveOld(newkeylist []string) {
 
 }
 
+// Get get value
 func (sm *SyncMap) Get(key string) (*SyncDataDetect, bool) {
 	if len(key) == 0 {
 		return nil, false
@@ -148,6 +162,7 @@ func (sm *SyncMap) Get(key string) (*SyncDataDetect, bool) {
 	return vv, ok
 }
 
+// Add add
 func (sm *SyncMap) Add(key string) *SyncDataDetect {
 	if len(key) == 0 {
 		return nil
@@ -162,6 +177,7 @@ func (sm *SyncMap) Add(key string) *SyncDataDetect {
 	return sbc
 }
 
+// Remove remove
 func (sm *SyncMap) Remove(key string) {
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
@@ -184,9 +200,13 @@ func (sm *SyncMap) String() string {
 	return string(jsonString)
 }
 
+// DetectData for detect
 var DetectData = NewSyncMap()
+
+// SASHDDinfo sas hd info
 var SASHDDinfo = NewSyncSASHDDMap()
 
+// MergeCalibration merge
 func MergeCalibration() {
 	SASHDDinfo.lock.Lock()
 	defer SASHDDinfo.lock.Unlock()
