@@ -235,7 +235,7 @@ func MergeCalibration() {
 }
 
 func main() {
-	fmt.Println("version: 17.08.24.0, auther:Jeffery Zhang")
+	fmt.Println("version: 20.10.25.0, auther:Jeffery Zhang")
 	nDelay := flag.Int("interval", 10, "interval run check disk.")
 	flag.Parse()
 
@@ -253,7 +253,7 @@ func main() {
 
 	time.Sleep(20 * time.Second)
 
-	StartTcpServer()
+	StartTCPServer()
 
 	fmt.Println(DetectData.dddetect)
 	//SASHDDinfo.RunCardInfo(1)

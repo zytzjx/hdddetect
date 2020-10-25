@@ -9,10 +9,7 @@ import (
 	"time"
 
 	"log"
-	"os"
 	"os/exec"
-	"path"
-	"path/filepath"
 	"regexp"
 )
 
@@ -34,6 +31,7 @@ var ingoreKeys = map[string]bool{
 	"Warning":          true,
 }
 
+// ReadDataFromSmartCtl Read Data From SmartCtl
 func (sdd *SyncDataDetect) ReadDataFromSmartCtl(wg *sync.WaitGroup) {
 	defer wg.Done()
 	//sDevName string, hdinfo *DataDetect
@@ -188,19 +186,20 @@ func waitTimeout(wg *sync.WaitGroup, timeout time.Duration) bool {
 	}
 }
 
+// RunListDisk run list disks
 func RunListDisk() {
 
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
+	// dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	// if err != nil {
+	// 	log.Fatal(err)
+	// 	return
+	// }
 
-	lsscsipath := path.Join(dir, "lsscsi")
-	if _, err := os.Stat(lsscsipath); os.IsNotExist(err) {
-		lsscsipath = "lsscsi"
-	}
-
+	// lsscsipath := path.Join(dir, "lsscsi")
+	// if _, err := os.Stat(lsscsipath); os.IsNotExist(err) {
+	// 	lsscsipath = "lsscsi"
+	// }
+	lsscsipath := "lsscsi"
 	cmd := exec.Command(lsscsipath, "-s", "-g")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -287,18 +286,21 @@ func RunListDisk() {
 
 }
 
+// SyncSASHDDMap sas hd map
 type SyncSASHDDMap struct {
 	lock          *sync.RWMutex
 	SASHDDMapData map[int]([]map[string]string)
 	ReadStatus    map[int]bool
 }
 
+// NewSyncSASHDDMap create structure
 func NewSyncSASHDDMap() *SyncSASHDDMap {
 	return &SyncSASHDDMap{lock: new(sync.RWMutex),
 		SASHDDMapData: make(map[int]([]map[string]string)),
 		ReadStatus:    make(map[int]bool)}
 }
 
+// ConDefine define disk info
 var ConDefine = map[string]string{
 	"Enclosure #":               "Enclosure",
 	"Slot #":                    "Slot",
@@ -357,6 +359,7 @@ func parseLsiData(lines []string) []map[string]string {
 	return ret
 }
 
+// ClearReadFlag read flag
 func (sshm *SyncSASHDDMap) ClearReadFlag() {
 	sshm.lock.Lock()
 	defer sshm.lock.Unlock()
@@ -365,20 +368,21 @@ func (sshm *SyncSASHDDMap) ClearReadFlag() {
 	}
 }
 
+// RunCardInfo   get card info
 func (sshm *SyncSASHDDMap) RunCardInfo(index int, wg *sync.WaitGroup) {
 	defer wg.Done()
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
+	// dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	// if err != nil {
+	// 	log.Fatal(err)
+	// 	return
+	// }
 
-	lsscsipath := path.Join(dir, "sas3ircu")
-	if _, err := os.Stat(lsscsipath); os.IsNotExist(err) {
-		lsscsipath = "sas2ircu"
-	}
+	// lsscsipath := path.Join(dir, "sas3ircu")
+	// if _, err := os.Stat(lsscsipath); os.IsNotExist(err) {
+	// 	lsscsipath = "sas2ircu"
+	// }
 
-	cmd := exec.Command("sas2ircu", strconv.Itoa(index), "DISPLAY")
+	cmd := exec.Command("./sas2ircu", strconv.Itoa(index), "DISPLAY")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		log.Fatal(err)

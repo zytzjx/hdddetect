@@ -20,7 +20,8 @@ func checkError(err error, info string) {
 	}
 }
 
-func StartTcpServer() {
+// StartTCPServer start tcp server
+func StartTCPServer() {
 
 	hostAndPort := ":12000"
 	listener := initServer(hostAndPort)
