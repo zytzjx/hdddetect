@@ -259,7 +259,7 @@ func main() {
 	nDelay := flag.Int("interval", 10, "interval run check disk.")
 	flag.Parse()
 
-	LoadConfigXml()
+	LoadConfigXML()
 
 	go func() {
 		for {

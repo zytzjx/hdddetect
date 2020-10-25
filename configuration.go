@@ -27,6 +27,7 @@ type configuration struct {
 	Conf config `xml:"mapconf"`
 }
 
+// Split rune
 func Split(r rune) bool {
 	return r == ',' || r == ';' || r == ':'
 }
@@ -50,6 +51,7 @@ func (cc config) GetCardListIndex() ([]int, error) {
 	return myslice, errors.New("card list is empty")
 }
 
+// GetPortMap get map
 func (cc config) GetPortMap() map[string]string {
 	labmap := make(map[string]string)
 	for _, vv := range cc.PortMap {
@@ -60,7 +62,8 @@ func (cc config) GetPortMap() map[string]string {
 
 var configxmldata *configuration
 
-func LoadConfigXml() {
+// LoadConfigXML load xml
+func LoadConfigXML() {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
 		log.Fatal(err)

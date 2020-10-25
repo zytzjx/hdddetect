@@ -15,7 +15,7 @@ var (
 
 func checkError(err error, info string) {
 	if err != nil {
-		fmt.Errorf("ERROR: " + info + " " + err.Error())
+		fmt.Println("ERROR: " + info + " " + err.Error())
 		panic("ERROR: " + info + " " + err.Error()) // terminate program
 	}
 }
